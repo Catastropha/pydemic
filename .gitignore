@@ -1,0 +1,7 @@
+.idea/
+env/
+__pycache__/
+dist/
+ignis.egg-info/
+build/
+best_model.pt

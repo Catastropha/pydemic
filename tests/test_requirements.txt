@@ -1,0 +1,5 @@
+https://download.pytorch.org/whl/cpu/torch-1.1.0-cp36-cp36m-linux_x86_64.whl
+pytest==5.0.0
+factory-boy==2.12.0
+pytest-cov==2.7.1
+codacy-coverage==1.3.11
