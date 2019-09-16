@@ -2,7 +2,7 @@ import gym
 import torch
 import torch.nn as nn
 
-from pydemic import PSO
+from pydemic import learn
 
 
 env = gym.make('CartPole-v1')
@@ -13,8 +13,8 @@ space_size = env.observation_space.shape[0]
 class Model(nn.Module):
     def __init__(self):
         super(Model, self).__init__()
-        self.fc1 = nn.Linear()
-        self.fc2 = nn.Linear()
+        self.fc1 = nn.Linear(space_size, 4)
+        self.fc2 = nn.Linear(4, action_space)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.fc1(x)
@@ -24,5 +24,11 @@ class Model(nn.Module):
 
 model = Model()
 
-pso = PSO()
-pso.learn(env=env, epochs=500, verbose=True)
+learn(
+    env=env,
+    model=model,
+    algo='PSO',
+    n_agents=8,
+    epochs=500,
+    verbose=True,
+)

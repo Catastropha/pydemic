@@ -17,6 +17,7 @@ class Swarm:
         self.episodes = None
 
     def populate(self,
+                 model,
                  agent,
                  n_agents: int,
                  ) -> None:

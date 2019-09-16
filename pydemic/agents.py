@@ -6,10 +6,11 @@ from .memories import Memory
 class BaseAgent(metaclass=ABCMeta):
 
     def __init__(self,
+                 model,
                  memory_size: int = 1,
                  ):
         self.memory = Memory(memory_size=memory_size)
-        self.centroids = None
+        self.model = model
         self.swarm = None
 
     @abstractmethod
@@ -21,14 +22,14 @@ class BaseAgent(metaclass=ABCMeta):
                    swarm,
                    ) -> None:
         # todo
-        self.memorize(score=float('inf'), position=self.centroids)
+        self.memorize(score=float('inf'), model=self.model)
         self.swarm = swarm
 
     def memorize(self,
                  score: float,
-                 position: torch.Tensor,
+                 model,
                  ) -> None:
-        self.memory.add(score=score, obj=position.clone())
+        self.memory.add(score=score, obj=model.clone())
 
     def topk(self,
              k: int,
