@@ -1,6 +1,2 @@
-https://download.pytorch.org/whl/cpu/torch-1.1.0-cp36-cp36m-linux_x86_64.whl
-pandas
-jupyter
-matplotlib
-seaborn
-scikit-learn
+torch==1.2.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+gym

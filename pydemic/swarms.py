@@ -56,13 +56,6 @@ class Swarm:
     def when(self) -> Tuple[int, int]:
         return self.episode, self.episodes
 
-    def predict(self,
-                data: torch.Tensor,
-                ) -> Tuple[list, float]:
-        agent = self.agents[0]
-        labels, score = agent.run(data=data)
-        return labels, score
-
     def train(self,
               data: torch.Tensor,
               episodes: int,
