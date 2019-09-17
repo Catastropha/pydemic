@@ -30,6 +30,7 @@ pso = PSO(
 
 pso.learn(
     env=env,
+    score_threshold=190,
     model=Model,
     n_agents=8,
     epochs=500,

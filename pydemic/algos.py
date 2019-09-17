@@ -15,10 +15,12 @@ class BaseAlgo(metaclass=ABCMeta):
 
     def learn(self,
               env,
+              score_threshold,
               model,
               n_agents,
               epochs,
-              verbose=False):
+              verbose=False,
+              ):
 
         self.populate(model=model, n_agents=n_agents)
 
@@ -26,8 +28,33 @@ class BaseAlgo(metaclass=ABCMeta):
         scores_window = deque(maxlen=100)
 
         for epoch in range(1, epochs+1):
-            env.reset()
 
+            for agent in self.agents:
+
+                state = env.reset()
+                score = 0
+
+                while True:
+                    action = agent.act(state)
+                    next_state, reward, done, _ = env.step(action)
+
+                    score += reward
+                    state = next_state
+
+                    if done:
+                        break
+
+                avg_score = np.mean(score)
+                scores_window.append(avg_score)
+                all_scores.append(avg_score)
+
+                print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)), end="")
+                if epoch % 100 == 0:
+                    print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
+                if np.mean(scores_window) >= score_threshold:
+                    print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
+                    self.save(filename=filename)
+                    break
 
 
 class PSO(BaseAlgo):
