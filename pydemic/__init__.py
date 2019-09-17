@@ -14,9 +14,13 @@ def learn(env,
     agents = []
 
     if algo == 'PSO':
-        global_memory = Memory()
-        agents = [PSOAgent() for _ in range(n_agents)]
+        public_memory = Memory()
+        for _ in range(n_agents):
+            private_memory = Memory()
+            agents.append(PSOAgent(model=model, public_memory=public_memory, private_memory=private_memory))
 
     elif algo == 'GWO':
-        global_memory = Memory(memory_size=3)
-        agents = [GWOAgent() for _ in range(n_agents)]
+        public_memory = Memory(memory_size=3)
+        for _ in range(n_agents):
+            private_memory = Memory()
+            agents.append(GWOAgent(model=model, public_memory=public_memory, private_memory=private_memory))

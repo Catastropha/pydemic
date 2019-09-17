@@ -1,17 +1,13 @@
 from abc import ABCMeta, abstractmethod
 import torch
-from .memories import Memory
 
 
 class BaseAgent(metaclass=ABCMeta):
 
     def __init__(self,
                  model,
-                 memory_size: int = 1,
                  ):
-        self.memory = Memory(memory_size=memory_size)
         self.model = model
-        self.swarm = None
 
     @abstractmethod
     def train(self):
@@ -23,7 +19,6 @@ class BaseAgent(metaclass=ABCMeta):
                    ) -> None:
         # todo
         self.memorize(score=float('inf'), model=self.model)
-        self.swarm = swarm
 
     def memorize(self,
                  score: float,
@@ -40,7 +35,6 @@ class BaseAgent(metaclass=ABCMeta):
 class PSOAgent(BaseAgent):
 
     def __init__(self,
-                 n_clusters: int,
                  social_coefficient: float,
                  personal_coefficient: float,
                  inertia: float,
@@ -63,9 +57,7 @@ class PSOAgent(BaseAgent):
 
 class GWOAgent(BaseAgent):
 
-    def __init__(self,
-                 n_clusters: int,
-                 ):
+    def __init__(self, ):
         BaseAgent.__init__(self, )
 
     def train(self) -> None:

@@ -2,7 +2,7 @@ import gym
 import torch
 import torch.nn as nn
 
-from pydemic import learn
+from pydemic.algos import PSO
 
 
 env = gym.make('CartPole-v1')
@@ -22,12 +22,15 @@ class Model(nn.Module):
         return x
 
 
-model = Model()
+pso = PSO(
+    social_coefficient=1.5,
+    personal_coefficient=1.5,
+    inertia=0.2,
+)
 
-learn(
+pso.learn(
     env=env,
-    model=model,
-    algo='PSO',
+    model=Model,
     n_agents=8,
     epochs=500,
     verbose=True,
