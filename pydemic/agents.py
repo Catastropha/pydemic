@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import torch
+from .memories import Memory
 
 
 class BaseAgent(metaclass=ABCMeta):
@@ -20,38 +21,32 @@ class BaseAgent(metaclass=ABCMeta):
         # todo
         self.memorize(score=float('inf'), model=self.model)
 
-    def memorize(self,
-                 score: float,
-                 model,
-                 ) -> None:
-        self.memory.add(score=score, obj=model.clone())
-
-    def topk(self,
-             k: int,
-             ) -> list:
-        return self.memory.topk(k=k)
-
 
 class PSOAgent(BaseAgent):
 
     def __init__(self,
-                 social_coefficient: float,
-                 personal_coefficient: float,
+                 model,
+                 public_memory: Memory,
+                 private_memory: Memory,
+                 public_coefficient: float,
+                 private_coefficient: float,
                  inertia: float,
                  ):
-        BaseAgent.__init__(self, )
-        self.social_coefficient = social_coefficient
-        self.personal_coefficient = personal_coefficient
+        BaseAgent.__init__(self, model=model)
+        self.public_memory = public_memory
+        self.private_memory = private_memory
+        self.public_coefficient = public_coefficient
+        self.private_coefficient = private_coefficient
         self.inertia = inertia
         self.velocity = 0
 
     def train(self) -> None:
-        social_best_position = self.swarm.topk(k=1)[0].topk(k=1)[0]
-        personal_best_position = self.topk(k=1)[0]
+        public_best_position = self.public_memory.topk(k=1)[0].topk(k=1)[0]
+        private_best_position = self.private_memory.topk(k=1)[0]
         inertia = self.inertia * self.velocity
-        personal = self.personal_coefficient * torch.empty(self.centroids.shape).uniform_(0, 1) * (personal_best_position - self.centroids)
-        social = self.social_coefficient * torch.empty(self.centroids.shape).uniform_(0, 1) * (social_best_position - self.centroids)
-        self.velocity = inertia + personal + social
+        private = self.private_coefficient * torch.empty(self.centroids.shape).uniform_(0, 1) * (private_best_position - self.centroids)
+        public = self.public_coefficient * torch.empty(self.centroids.shape).uniform_(0, 1) * (public_best_position - self.centroids)
+        self.velocity = inertia + private + public
         self.centroids += self.velocity
 
 

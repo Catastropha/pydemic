@@ -23,8 +23,8 @@ class Model(nn.Module):
 
 
 pso = PSO(
-    social_coefficient=1.5,
-    personal_coefficient=1.5,
+    public_coefficient=1.5,
+    private_coefficient=1.5,
     inertia=0.2,
 )
 
