@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from collections import deque
 import numpy as np
+import torch
 from .memories import Memory
 from .agents import PSOAgent
 
@@ -12,6 +13,10 @@ class BaseAlgo(metaclass=ABCMeta):
 
     @abstractmethod
     def populate(self, model, n_agents):
+        pass
+
+    @abstractmethod
+    def save(self, filename):
         pass
 
     def learn(self,
@@ -53,11 +58,13 @@ class BaseAlgo(metaclass=ABCMeta):
             scores_window.append(avg_score)
             all_scores.append(avg_score)
 
-            print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)), end="")
-            if epoch % 100 == 0:
-                print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
+            if verbose:
+                print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)), end="")
+                if epoch % 100 == 0:
+                    print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
             if np.mean(scores_window) >= score_threshold:
-                print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
+                if verbose:
+                    print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
                 self.save(filename=filename)
                 break
 
@@ -74,15 +81,16 @@ class PSO(BaseAlgo):
         self.public_coefficient = public_coefficient
         self.private_coefficient = private_coefficient
         self.inertia = inertia
+        self.public_memory = None
 
     def populate(self, model, n_agents):
         self.agents = []
-        public_memory = Memory()
+        self.public_memory = Memory()
         for _ in range(n_agents):
             private_memory = Memory()
             agent = PSOAgent(
                 model=model(),
-                public_memory=public_memory,
+                public_memory=self.public_memory,
                 private_memory=private_memory,
                 public_coefficient=self.public_coefficient,
                 private_coefficient=self.private_coefficient,
@@ -90,6 +98,7 @@ class PSO(BaseAlgo):
             )
             self.agents.append(agent)
 
-
-
+    def save(self, filename):
+        agent = self.public_memory.topk(k=1)[0]
+        torch.save(obj=agent.model.state_dict(), f=filename)
 
