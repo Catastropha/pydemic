@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from collections import deque
+import numpy as np
 from .memories import Memory
 from .agents import PSOAgent
 
@@ -19,6 +20,7 @@ class BaseAlgo(metaclass=ABCMeta):
               model,
               n_agents,
               epochs,
+              filename='best_agent',
               verbose=False,
               ):
 
@@ -29,6 +31,7 @@ class BaseAlgo(metaclass=ABCMeta):
 
         for epoch in range(1, epochs+1):
 
+            scores = []
             for agent in self.agents:
 
                 state = env.reset()
@@ -44,17 +47,21 @@ class BaseAlgo(metaclass=ABCMeta):
                     if done:
                         break
 
-                avg_score = np.mean(score)
-                scores_window.append(avg_score)
-                all_scores.append(avg_score)
+                scores.append(score)
 
-                print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)), end="")
-                if epoch % 100 == 0:
-                    print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
-                if np.mean(scores_window) >= score_threshold:
-                    print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
-                    self.save(filename=filename)
-                    break
+            avg_score = np.mean(scores)
+            scores_window.append(avg_score)
+            all_scores.append(avg_score)
+
+            print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)), end="")
+            if epoch % 100 == 0:
+                print('\rEpisode {}\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
+            if np.mean(scores_window) >= score_threshold:
+                print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(epoch, np.mean(scores_window)))
+                self.save(filename=filename)
+                break
+
+        return all_scores
 
 
 class PSO(BaseAlgo):

@@ -34,5 +34,6 @@ pso.learn(
     model=Model,
     n_agents=8,
     epochs=500,
+    filename='best_agent',
     verbose=True,
 )
