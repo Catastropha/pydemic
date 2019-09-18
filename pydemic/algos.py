@@ -8,16 +8,19 @@ from .agents import PSOAgent
 
 class BaseAlgo(metaclass=ABCMeta):
 
-    def __init__(self, ):
+    def __init__(self,
+                 public_memory_size: int = 1,
+                 ):
+        self.public_memory = Memory(memory_size=public_memory_size)
         self.agents = []
 
     @abstractmethod
     def populate(self, model, n_agents):
         pass
 
-    @abstractmethod
     def save(self, filename):
-        pass
+        agent = self.public_memory.topk(k=1)[0]
+        torch.save(obj=agent.model.state_dict(), f=filename)
 
     def learn(self,
               env,
@@ -52,6 +55,7 @@ class BaseAlgo(metaclass=ABCMeta):
                     if done:
                         break
 
+                self.public_memory.add(score=score, obj=agent)
                 scores.append(score)
 
             avg_score = np.mean(scores)
@@ -81,11 +85,9 @@ class PSO(BaseAlgo):
         self.public_coefficient = public_coefficient
         self.private_coefficient = private_coefficient
         self.inertia = inertia
-        self.public_memory = None
 
     def populate(self, model, n_agents):
         self.agents = []
-        self.public_memory = Memory()
         for _ in range(n_agents):
             private_memory = Memory()
             agent = PSOAgent(
@@ -97,8 +99,3 @@ class PSO(BaseAlgo):
                 inertia=self.inertia,
             )
             self.agents.append(agent)
-
-    def save(self, filename):
-        agent = self.public_memory.topk(k=1)[0]
-        torch.save(obj=agent.model.state_dict(), f=filename)
-

@@ -14,13 +14,6 @@ class BaseAgent(metaclass=ABCMeta):
     def train(self):
         pass
 
-    def initialize(self,
-                   data: torch.Tensor,
-                   swarm,
-                   ) -> None:
-        # todo
-        self.memorize(score=float('inf'), model=self.model)
-
 
 class PSOAgent(BaseAgent):
 
