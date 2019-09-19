@@ -6,18 +6,26 @@ from .memories import Memory
 class BaseAgent(metaclass=ABCMeta):
 
     def __init__(self,
+                 device,
                  model,
                  ):
+        self.device = device
         self.model = model
 
     @abstractmethod
     def train(self):
         pass
 
+    def act(self, state):
+        state = torch.from_numpy(state).float().to(self.device)
+        with torch.no_grad():
+            return self.model(state).cpu().data.numpy()
+
 
 class PSOAgent(BaseAgent):
 
     def __init__(self,
+                 device,
                  model,
                  public_memory: Memory,
                  private_memory: Memory,
@@ -25,7 +33,7 @@ class PSOAgent(BaseAgent):
                  private_coefficient: float,
                  inertia: float,
                  ):
-        BaseAgent.__init__(self, model=model)
+        BaseAgent.__init__(self, device=device, model=model)
         self.public_memory = public_memory
         self.private_memory = private_memory
         self.public_coefficient = public_coefficient

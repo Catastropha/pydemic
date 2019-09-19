@@ -77,11 +77,13 @@ class BaseAlgo(metaclass=ABCMeta):
 
 class PSO(BaseAlgo):
     def __init__(self,
+                 device: str,
                  public_coefficient: float,
                  private_coefficient: float,
                  inertia: float,
                  ):
         BaseAlgo.__init__(self, )
+        self.device = device
         self.public_coefficient = public_coefficient
         self.private_coefficient = private_coefficient
         self.inertia = inertia
@@ -91,6 +93,7 @@ class PSO(BaseAlgo):
         for _ in range(n_agents):
             private_memory = Memory()
             agent = PSOAgent(
+                device=self.device,
                 model=model(),
                 public_memory=self.public_memory,
                 private_memory=private_memory,
