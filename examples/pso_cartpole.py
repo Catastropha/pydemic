@@ -31,6 +31,7 @@ pso = PSO(
 pso.learn(
     device='cpu',
     env=env,
+    mode='discrete',
     score_threshold=190,
     model=Model,
     n_agents=8,

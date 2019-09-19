@@ -6,11 +6,11 @@ from .memories import Memory
 class BaseAgent(metaclass=ABCMeta):
 
     def __init__(self,
-                 device,
                  model,
+                 device: str = 'cpu',
                  ):
-        self.device = device
         self.model = model
+        self.device = device
 
     @abstractmethod
     def train(self):
@@ -33,7 +33,7 @@ class PSOAgent(BaseAgent):
                  private_coefficient: float,
                  inertia: float,
                  ):
-        BaseAgent.__init__(self, device=device, model=model)
+        BaseAgent.__init__(self, model=model, device=device, )
         self.public_memory = public_memory
         self.private_memory = private_memory
         self.public_coefficient = public_coefficient

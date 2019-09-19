@@ -9,7 +9,6 @@ from .agents import PSOAgent
 class BaseAlgo(metaclass=ABCMeta):
 
     def __init__(self,
-                 device: str = 'cpu',
                  public_memory_size: int = 1,
                  ):
         self.public_memory = Memory(memory_size=public_memory_size)
@@ -26,6 +25,7 @@ class BaseAlgo(metaclass=ABCMeta):
     def learn(self,
               device,
               env,
+              mode,
               score_threshold,
               model,
               n_agents,
@@ -49,6 +49,8 @@ class BaseAlgo(metaclass=ABCMeta):
 
                 while True:
                     action = agent.act(state)
+                    if mode == 'discrete':
+                        action = np.argmax(action)
                     next_state, reward, done, _ = env.step(action)
 
                     score += reward
