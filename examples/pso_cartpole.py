@@ -29,6 +29,7 @@ pso = PSO(
 )
 
 pso.learn(
+    device='cpu',
     env=env,
     score_threshold=190,
     model=Model,

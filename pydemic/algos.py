@@ -9,13 +9,14 @@ from .agents import PSOAgent
 class BaseAlgo(metaclass=ABCMeta):
 
     def __init__(self,
+                 device: str = 'cpu',
                  public_memory_size: int = 1,
                  ):
         self.public_memory = Memory(memory_size=public_memory_size)
         self.agents = []
 
     @abstractmethod
-    def populate(self, model, n_agents):
+    def populate(self, device, model, n_agents):
         pass
 
     def save(self, filename):
@@ -23,6 +24,7 @@ class BaseAlgo(metaclass=ABCMeta):
         torch.save(obj=agent.model.state_dict(), f=filename)
 
     def learn(self,
+              device,
               env,
               score_threshold,
               model,
@@ -32,7 +34,7 @@ class BaseAlgo(metaclass=ABCMeta):
               verbose=False,
               ):
 
-        self.populate(model=model, n_agents=n_agents)
+        self.populate(device=device, model=model, n_agents=n_agents)
 
         all_scores = []
         scores_window = deque(maxlen=100)
@@ -77,23 +79,21 @@ class BaseAlgo(metaclass=ABCMeta):
 
 class PSO(BaseAlgo):
     def __init__(self,
-                 device: str,
                  public_coefficient: float,
                  private_coefficient: float,
                  inertia: float,
                  ):
         BaseAlgo.__init__(self, )
-        self.device = device
         self.public_coefficient = public_coefficient
         self.private_coefficient = private_coefficient
         self.inertia = inertia
 
-    def populate(self, model, n_agents):
+    def populate(self, device, model, n_agents):
         self.agents = []
         for _ in range(n_agents):
             private_memory = Memory()
             agent = PSOAgent(
-                device=self.device,
+                device=device,
                 model=model(),
                 public_memory=self.public_memory,
                 private_memory=private_memory,
